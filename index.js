@@ -30,7 +30,10 @@ const cors = require("cors");
 const bodyParser = require('body-parser')
 
 Database()
-app.use(cors());
+app.use(cors({
+    origin: true,
+    credentials: true,
+}));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 readdirSync("./routes").map((route) =>

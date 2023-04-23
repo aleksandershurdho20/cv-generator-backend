@@ -2,7 +2,7 @@ const User = require('../models/User.js')
 const { hashPassword, comparePassword } = require('../utils/auth')
 const jwt = require('jsonwebtoken')
 const register = async (req, res) => {
-    const { username, email, password, role } = req.body;
+    const {  email, password, role } = req.body;
 
 
     try {
@@ -10,7 +10,6 @@ const register = async (req, res) => {
         if (existUser) return res.status(400).send("Email is already taken!");
         const hashedPassword = await hashPassword(password);
         const user = new User({
-            username,
             email,
             password: hashedPassword,
             role
@@ -18,6 +17,7 @@ const register = async (req, res) => {
         await user.save();
         res.status(200).send(user);
     } catch (error) {
+        console.log(error)
         res.status(500).send("Server error");
     }
 }
