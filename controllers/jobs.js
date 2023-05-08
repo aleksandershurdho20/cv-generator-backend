@@ -62,10 +62,36 @@ const getJob = async (req,res) =>{
 
     }
 }
+
+const getAllJobsByCompany = async(req,res) =>{
+    const {id}=req.params
+    try {
+        const jobs = await Jobs.find({company:id})
+        res.status(200).json({jobs})
+
+    } catch (error) {
+        res.status(500).send(error)
+
+    }
+}
+
+const deleteJob = async(req,res) =>{
+    const {id}=req.params
+    try {
+        const jobs = await Jobs.findByIdAndDelete(id)
+        return res.status(200).send("Puna u fshi me sukses!")
+
+    } catch (error) {
+        res.status(500).send(error)
+
+    }
+}
 module.exports={
     createJob,
     getJobs,
     getFilteredJobs,
     getJob,
-    updateJob
+    updateJob,
+    getAllJobsByCompany,
+    deleteJob
 }

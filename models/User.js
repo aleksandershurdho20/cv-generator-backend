@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const { ObjectId } = mongoose.Schema;
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -14,9 +15,10 @@ const userSchema = new mongoose.Schema({
     role: {
         type: [String],
 
-        default: ['User'],
-        enum: ["User", "Company", "Admin"],
-    }
+        default: ['user'],
+        enum: ["user", "company", ],
+    },
+ 
 },
     { timestamps: true }
 )
