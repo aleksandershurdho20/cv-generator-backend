@@ -18,6 +18,20 @@ const userSchema = new mongoose.Schema({
         default: ['user'],
         enum: ["user", "company", ],
     },
+
+    userProfileId: {
+        type: ObjectId,
+        ref:"UserProfile"
+
+    },
+    companyProfileId:{
+        type: ObjectId,
+        ref:"CompanyProfile"
+
+    }
+
+
+
  
 },
     { timestamps: true }

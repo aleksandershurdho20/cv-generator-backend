@@ -8,7 +8,7 @@ const verifyToken  =  async(req,res,next) =>{
         const token = req.headers.authorization
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decodedToken._id;
-        const userData = await User.findById(userId).select("-password")
+        const userData = await User.findById(userId).select("-password").populate("companyProfileId")
         if(userData.role[0] == "company"){
             const companyProfile = await CompanyProfile.findOne({user:userId})
               // res.send(userData)
@@ -17,13 +17,15 @@ const verifyToken  =  async(req,res,next) =>{
                 profile:companyProfile
               }
             res.json({userData,
-              profile:companyProfile})
+             })
         }
         else {
+          const userData = await User.findById(userId).select("-password").populate("userProfileId")
+
             const userProfile = await UserProfile.findOne({user:userId})
-            res.json(userProfile)
-            res.json({...userData,
-              profile:userProfile})
+            res.json({userData})
+            // res.json({...userData,
+            //   profile:userProfile})
 
         }
         // res.send(userData)

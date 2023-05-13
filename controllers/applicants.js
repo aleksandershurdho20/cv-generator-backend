@@ -87,8 +87,27 @@ const cancelJobApplication = async(req,res) =>{
 
     }
 }
+
+
+const getAllCompanyJobApplications = async(req,res) =>{
+    const {id}= req.query
+    try {
+        const applicants = await Job.find({company:"63f92e243685850678457ba7"}).select("-password")
+        .populate({
+            path:"applicants",
+            // populate: [
+            //     { path: 'User' },
+            // ]
+        })
+        res.json(applicants)
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error)
+    }
+}
 module.exports ={
     applyToJob,
     getUserJobApplications,
-    cancelJobApplication
+    cancelJobApplication,
+    getAllCompanyJobApplications
 }

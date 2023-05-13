@@ -32,8 +32,8 @@ const login = async (req, res) => {
             expiresIn: "7d",
         });
         user.password = undefined;
-        res.cookie("token", token, { httpOnly: true });
-        res.json({ ...user._doc, token });
+        // res.cookie("token", token, { httpOnly: true });
+        res.status(200).json({ ...user._doc, token });
     } catch (error) {
         console.log(error, 'error')
         res.status(500).send(error);

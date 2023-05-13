@@ -48,7 +48,11 @@ const jobSchema = new mongoose.Schema(
     },
 
     skills: [String],
-    applicants:[ObjectId]
+    applicants:[
+      {
+      type:ObjectId,
+      ref:"User"
+    }]
   },
   { timestamps: true }
 );
