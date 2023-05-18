@@ -1,6 +1,7 @@
 const User = require('../models/User.js')
 const Job = require("../models/Job")
 const Applicants = require("../models/Applicants")
+const UserProfile = require('../models/UserProfile.js')
 
 const applyToJob = async(req,res) =>{
     try {
@@ -92,22 +93,35 @@ const cancelJobApplication = async(req,res) =>{
 const getAllCompanyJobApplications = async(req,res) =>{
     const {id}= req.query
     try {
-        const applicants = await Job.find({company:"63f92e243685850678457ba7"}).select("-password")
+        const applicants = await Job.find({company:"63f92e243685850678457ba7"})
         .populate({
             path:"applicants",
-            // populate: [
-            //     { path: 'User' },
-            // ]
-        })
+            select:"userProfileId",
+            populate: [
+                { path: 'userProfileId' },
+            ]
+        }).select("applicants")
         res.json(applicants)
     } catch (error) {
         console.log(error)
         res.status(500).send(error)
     }
 }
+
+const getApplicant = async(req,res) =>{
+    const {id}=req.params
+    try {
+       const applicant = await UserProfile.findOne({_id:id}) 
+       res.json(applicant)
+    } catch (error) {
+        res.status(500).send(error)
+        console.log(error)
+    }
+}
 module.exports ={
     applyToJob,
     getUserJobApplications,
     cancelJobApplication,
-    getAllCompanyJobApplications
+    getAllCompanyJobApplications,
+    getApplicant
 }

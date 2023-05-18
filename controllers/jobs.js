@@ -1,4 +1,5 @@
 const Jobs = require("../models/Job");
+const SavedJobs = require("../models/SavedJobs");
 
 const createJob = async (req, res) => {
   try {
@@ -102,6 +103,39 @@ const getJobMatchedByCategory = async(req,res) =>{
 
     }
 }
+
+const saveJob = async(req,res) =>{
+  try {
+    const savedJobs = await new SavedJobs(req.body).save()
+    res.status(201).json(savedJobs)
+  } catch (error) {
+    res.status(500).send(error);
+
+  }
+}
+
+const getSavedJobs = async(req,res) =>{
+  const {id}= req.params
+  try {
+    const savedJobs = await SavedJobs.find({user:id})
+    res.status(200).json(savedJobs)
+
+  } catch (error) {
+    res.status(500).send(error);
+
+  }
+}
+const removeSavedJob = async(req,res) =>{
+  const {id} = req.params
+  try {
+    const jobs = await SavedJobs.findByIdAndDelete(id)
+    res.status(200).send("U hoq nga favoritet!")
+
+  } catch (error) {
+    res.status(500).send(error);
+
+  }
+}
 module.exports = {
   createJob,
   getJobs,
@@ -110,5 +144,8 @@ module.exports = {
   updateJob,
   getAllJobsByCompany,
   deleteJob,
-  getJobMatchedByCategory
+  getJobMatchedByCategory,
+  saveJob,
+  getSavedJobs,
+  removeSavedJob
 };

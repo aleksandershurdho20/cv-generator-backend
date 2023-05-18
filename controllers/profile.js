@@ -51,7 +51,29 @@ const getProfile = async (req, res) => {
     }
   } catch (error) {}
 };
+
+const updateProfile = async(req,res) =>{
+  const { user } = req.params;
+  try {
+    const userData = await User.findById(user);
+    if (userData.role[0] == "company") {
+      const companyProfile = await  CompanyProfile.findByIdAndUpdate(req.body._id,req.body)
+    
+
+      res.status(201).json(companyProfile);
+    } else {
+      const userProfile = await  UserProfile.findByIdAndUpdate(req.body._id,req.body)
+   
+
+      res.status(201).json(userProfile);
+    }
+  } catch (error) {
+    console.log(error, "r");
+    res.status(500).send(error);
+  }
+}
 module.exports = {
   createProfile,
   getProfile,
+  updateProfile
 };
