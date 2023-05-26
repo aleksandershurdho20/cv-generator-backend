@@ -1,5 +1,7 @@
 const Jobs = require("../models/Job");
 const SavedJobs = require("../models/SavedJobs");
+const User = require("../models/User");
+const UserProfile = require("../models/UserProfile");
 
 const createJob = async (req, res) => {
   try {
@@ -21,7 +23,7 @@ const getJobs = async (req, res) => {
           select: "industry location name size image",
         },
       ],
-    });
+    })
     return res.json({ jobs });
   } catch (error) {
     console.log(error);
@@ -104,6 +106,29 @@ const getJobMatchedByCategory = async(req,res) =>{
     }
 }
 
+const getJobMatchedBySkills = async(req,res) =>{
+  const {id}=req.params
+  try {
+    const user = await User.findById(id).populate("userProfileId")
+    const userSkills = user.userProfileId.skills.map(skill => skill.title)
+   const jobs = await  Jobs.find({ skills : { $in : userSkills }}).populate({
+    path: "company",
+    select: "_id",
+    populate: [
+      {
+        path: "companyProfileId",
+        select: "industry location name size image",
+      },
+    ],
+  });
+
+    res.status(200).json(jobs)
+
+  } catch (error) {
+    res.status(500).send(error);
+    console.log(error)
+  }
+}
 const saveJob = async(req,res) =>{
   try {
     const savedJobs = await new SavedJobs(req.body).save()
@@ -118,10 +143,19 @@ const getSavedJobs = async(req,res) =>{
   const {id}= req.params
   try {
     const savedJobs = await SavedJobs.find({user:id})
+    .populate({
+      path: "job",
+      populate: [{ path: "company",select:"companyProfileId",populate:{
+        path:"companyProfileId",
+        select:"name industry"
+      } }],
+    })
+    ;
     res.status(200).json(savedJobs)
 
   } catch (error) {
     res.status(500).send(error);
+    console.log(error,"error")
 
   }
 }
@@ -147,5 +181,6 @@ module.exports = {
   getJobMatchedByCategory,
   saveJob,
   getSavedJobs,
-  removeSavedJob
+  removeSavedJob,
+  getJobMatchedBySkills
 };

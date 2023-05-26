@@ -28,9 +28,15 @@ const applicantsSchema = new mongoose.Schema({
     is_confirmed:{
         type:Boolean,
         default:false
-    }
+    },
+
+    status: {
+        type: String,
+        enum: ["applied", "shortlisted", "rejected"],
+        default: "applied",
+      },
     
 
-})
+},{timestamps:true})
 
 module.exports = mongoose.model("Applicants",applicantsSchema)

@@ -37,8 +37,9 @@ const applyToJob = async(req,res) =>{
     //     }
         const jobs = await new Applicants({
             job:req.body.job,
-            candidate:[req.body.candidate],
-            is_confirmed:req.body.is_confirmed
+            candidate:req.body.candidate,
+            is_confirmed:req.body.is_confirmed,
+            status:"applied"
         }).save()
 
         await Job.findByIdAndUpdate(req.body.job, {
@@ -118,10 +119,26 @@ const getApplicant = async(req,res) =>{
         console.log(error)
     }
 }
+
+const rejectApplicant = async(req,res) =>{
+    const {id}=req.params
+    try {
+        const applicant =  await Applicants.findOneAndUpdate(
+            { candidate: id },
+            { $set: { status: 'rejected' } },
+            { new: true }
+          );
+        res.status(200).json(applicant)
+    } catch (error) {
+        res.status(500).send(error)
+
+    }
+}
 module.exports ={
     applyToJob,
     getUserJobApplications,
     cancelJobApplication,
     getAllCompanyJobApplications,
-    getApplicant
+    getApplicant,
+    rejectApplicant
 }

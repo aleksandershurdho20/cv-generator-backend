@@ -10,25 +10,11 @@ const createMessage = async(req,res) =>{
     }
 }
 
-async function getUserDataFromRequest(req) {
-    return new Promise((resolve, reject) => {
-        const token = req.headers.authorization
-              if (token) {
-        jwt.verify(token, process.env.JWT_SECRET, {}, (err, userData) => {
-          if (err) throw err;
-          resolve(userData);
-        });
-      } else {
-        reject('no token');
-      }
-    });
-  
-  }
+
 const getMessages = async(req,res) =>{
     const {id}= req.params
     
     try {
-        const userData = await getUserDataFromRequest(req);
         const messages = await Messages
 
         .find({
@@ -50,7 +36,22 @@ const getMessages = async(req,res) =>{
     }
 }
 
+
+const getMessagesByConversation = async(req,res) =>{
+    const {id} = req.params
+    try {
+        const messages = await Messages.find({conversation:id})
+        res.json(messages)
+
+
+    } catch (error) {
+        res.status(500).send(error)
+  
+    }
+}
+
 module.exports = {
     createMessage,
-    getMessages
+    getMessages,
+    getMessagesByConversation
 }
