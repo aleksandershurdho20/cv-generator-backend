@@ -92,9 +92,10 @@ const cancelJobApplication = async(req,res) =>{
 
 
 const getAllCompanyJobApplications = async(req,res) =>{
-    const {id}= req.query
+    const {id}= req.params
+    // 63f92e243685850678457ba7
     try {
-        const applicants = await Job.find({company:"63f92e243685850678457ba7"})
+        const applicants = await Job.find({company:id})
         .populate({
             path:"applicants",
             select:"userProfileId",
@@ -128,6 +129,23 @@ const rejectApplicant = async(req,res) =>{
             { $set: { status: 'rejected' } },
             { new: true }
           );
+          
+        res.status(200).json(applicant)
+    } catch (error) {
+        res.status(500).send(error)
+
+    }
+}
+
+const contactApplicant = async(req,res) =>{
+    const {id}=req.params
+    try {
+        const applicant =  await Applicants.findOneAndUpdate(
+            { candidate: id },
+            { $set: { status: 'shortlisted' } },
+            { new: true }
+          );
+          
         res.status(200).json(applicant)
     } catch (error) {
         res.status(500).send(error)
@@ -140,5 +158,6 @@ module.exports ={
     cancelJobApplication,
     getAllCompanyJobApplications,
     getApplicant,
-    rejectApplicant
+    rejectApplicant,
+    contactApplicant
 }

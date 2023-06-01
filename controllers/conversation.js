@@ -20,8 +20,8 @@ const getUserConversations = async (req, res) => {
         path: "members",
         select: "_id",
         populate: [
-          { path: "companyProfileId", select: "name user" },
-          { path: "userProfileId", select: "name last_name user" },
+          { path: "companyProfileId", select: "name user image" },
+          { path: "userProfileId", select: "name last_name user image" },
         ],
       })
       .exec();

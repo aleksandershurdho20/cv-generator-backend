@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 readdirSync("./routes").map((route) =>
     app.use("/api", require(`./routes/${route}`))
 );
+app.use('/uploads', express.static('uploads'))
 
 let onlineUsers = []
 io.on("connection",(socket) =>{

@@ -72,8 +72,37 @@ const updateProfile = async(req,res) =>{
     res.status(500).send(error);
   }
 }
+
+const searchUsersByJobPosition = async(req,res) =>{
+  const {query}=req.body
+  const rgx = (pattern) => new RegExp(`.*${pattern}.*`);
+  const searchRgx = rgx(query.trim());
+  try {
+   const users = await  UserProfile.find({"experience.position": { $regex: searchRgx, $options: "i" }})
+
+    res.status(200).json(users)
+
+  } catch (error) {
+    res.status(500).send(error);
+    console.log(error)
+  }
+}
+
+const getUserProfile = async(req,res) =>{
+  const { id } = req.params;
+  console.log(id,'ido')
+  try {
+    const userProfile = await UserProfile.findOne({ user: id });
+    res.json(userProfile);
+  } catch (error) {
+    res.status(500).send(error);
+
+  }
+}
 module.exports = {
   createProfile,
   getProfile,
-  updateProfile
+  updateProfile,
+  searchUsersByJobPosition,
+  getUserProfile
 };

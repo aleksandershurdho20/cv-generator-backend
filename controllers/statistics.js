@@ -33,18 +33,25 @@ const getCompanyStats = async (req, res) => {
 
     const applicantStatuses = await Applicants.aggregate([
       {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 },
+        $lookup: {
+          from: "jobs",
+          localField: "job",
+          foreignField: "_id",
+          as: "jobData",
         },
       },
+      { $match: { "jobData.company": new mongoose.Types.ObjectId(id) } },
+      { $group: { _id: "$status", count: { $sum: 1 } } },
     ]);
     const createdJobs = await Job.find({ company: id });
 
     res.json({
       createdJobs: createdJobs.length,
       monthlyApplicants,
-      totalApplicantsInJobs: totalApplicantsInJobs[0].total_applicants,
+      totalApplicantsInJobs:
+        totalApplicantsInJobs.length > 0
+          ? totalApplicantsInJobs[0].total_applicants
+          : 0,
       messages: totalMessages.length,
       applicantStatuses,
     });
@@ -90,7 +97,7 @@ const getUserStats = async (req, res) => {
     const totalMessages = await Messages.find({
       $or: [{ sender: id }, { receiver: id }],
     }).count();
-    
+
     res.json({
       totalJobsApply,
       totalMessages,

@@ -13,7 +13,10 @@ const applicantsSchema = new mongoose.Schema({
     //     // unique:true,
     // },
 
-    candidate:ObjectId,
+    candidate:{
+        type:ObjectId,
+        ref:"User"
+    },
 
     job:{
         type:ObjectId,
