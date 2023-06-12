@@ -32,9 +32,11 @@ const getJobs = async (req, res) => {
 };
 
 const getFilteredJobs = async (req, res) => {
-  const { title, jobType } = req.query;
+  const { title, jobType,category } = req.query;
   const test = title === "undefined";
   const second = jobType === "undefined";
+  const third = category === "undefined";
+
   const filters = {
     ...(!test && {
       title: {
@@ -43,6 +45,8 @@ const getFilteredJobs = async (req, res) => {
       },
     }),
     ...(!second && { jobType: jobType }),
+    ...(!third && { category: category }),
+
   };
   try {
     const jobs = await Jobs.find(filters);

@@ -1,11 +1,27 @@
 const Conversation = require("../models/Conversation");
 const Messages = require("../models/Messages");
+const { ObjectId } = require('mongodb');
 
 const createConversation = async (req, res) => {
+  const {params,...rest}= req.body
   try {
-    const conversation = await new Conversation(req.body).save();
-    res.status(201).json(conversation);
+    const converSationExist =  await Conversation.findOne({
+      members: { $in: [params.receiver] },
+    })
+    if(converSationExist){
+      const data = {...params,conversation:ObjectId(converSationExist._id).valueOf()}
+    const messages =  await new Messages(data).save()
+     res.status(201).json(messages)
+    }
+    else{
+
+      const conversation = await new Conversation(rest).save();
+      const data = {...params,conversation:ObjectId(conversation._id).valueOf()}
+       await new Messages(data).save()
+      res.status(201).json(conversation);
+    }
   } catch (error) {
+    console.log(error)
     res.status(500).send(error);
   }
 };
