@@ -61,7 +61,8 @@ const applyToJob = async(req,res) =>{
 const getUserJobApplications = async(req,res) =>{
     const {id}=req.params
     try {
-        const applicants = await Applicants.find({candidate:id}).populate("job")
+        const applicants = await (await Applicants.find({candidate:id}).populate("job")).filter(data => data.job)
+        console.log(applicants,'apli')
         res.status(200).json(applicants)
     } catch (error) {
         res.status(500).send(error)
@@ -73,10 +74,11 @@ const getUserJobApplications = async(req,res) =>{
 const cancelJobApplication = async(req,res) =>{
     const {id}=req.params
     try {
-        const allJobs = await Applicants.findByIdAndUpdate(id,{
-            is_confirmed:false
-        }
-       )
+    //     const allJobs = await Applicants.findByIdAndUpdate(id,{
+    //         is_confirmed:false
+    //     }
+    //    )
+    const allJobs = await Applicants.findByIdAndDelete(id)
         await Job.findByIdAndUpdate(req.body.job, {
             $inc: { numberOfApplications: -1 },
             $pull:{

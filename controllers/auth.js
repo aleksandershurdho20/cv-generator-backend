@@ -24,21 +24,28 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
-        if (!user) return res.status(400).send("Email or password incorrect");
-        const matchPassword = await comparePassword(password, user.password);
-        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-            expiresIn: "7d",
-        });
-        user.password = undefined;
-        // res.cookie("token", token, { httpOnly: true });
-        res.status(200).json({ ...user._doc, token });
+      const { email, password } = req.body;
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).send("Email or password incorrect");
+      }
+  
+      const matchPassword = await comparePassword(password, user.password);
+      if (!matchPassword) {
+        return res.status(400).send("Email or password incorrect");
+      }
+  
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "7d",
+      });
+  
+      user.password = undefined;
+      res.status(200).json({ ...user._doc, token });
     } catch (error) {
-        console.log(error, 'error')
-        res.status(500).send(error);
+      console.log(error);
+      res.status(500).send("Server Error");
     }
-}
+  }
 
 module.exports = {
     register,
