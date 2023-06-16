@@ -30,7 +30,10 @@ const getUserConversations = async (req, res) => {
   const { id } = req.params;
   try {
     const conversation = await Conversation.find({
-      members: { $in: [id] },
+      $or: [
+        { members: { $in: [id] } },
+        { deletedBy: {$nin:[id]} }
+      ]
     })
       .populate({
         path: "members",

@@ -5,7 +5,12 @@ const ConversationSchema = new mongoose.Schema(
   {
     members: {
       type: [ObjectId],
-      ref:"User"
+      ref: "User",
+    },
+    deletedBy: {
+      type: [ObjectId],
+      ref: "User",
+      default: [],
     },
   },
   { timestamps: true }

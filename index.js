@@ -31,9 +31,9 @@ io.on("connection",(socket) =>{
             userId,
             socketId:socket.id
         })
+        io.emit("getOnlineUsers",onlineUsers)
         console.log(onlineUsers)
     })
-    io.emit("getOnlineUsers",onlineUsers)
 
     socket.on("sendMessage",(message) =>{
         const user = onlineUsers.find(user => user.userId == message.id)
