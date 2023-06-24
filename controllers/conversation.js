@@ -30,10 +30,17 @@ const getUserConversations = async (req, res) => {
   const { id } = req.params;
   try {
     const conversation = await Conversation.find({
-      $or: [
-        { members: { $in: [id] } },
-        { deletedBy: {$nin:[id]} }
-      ]
+      members: { $in: [id] },
+      // deletedBy: { $ne: userId },
+
+      // $or: [
+      //   { members: { $in: [id] }, deletedBy: { $nin: [id] } },
+      //   { members: { $in: [id] }, deletedBy: { $exists: false } }
+      // ]
+      // $or: [
+      //   { members: { $in: [ObjectId(id)] } },
+      //   { deletedBy: {$nin:[ObjectId(id)]} }
+      // ]
     })
       .populate({
         path: "members",
@@ -59,8 +66,13 @@ const deleteUserConversation = async (req, res) => {
     if (!conversation) {
       return res.status(400).send("Biseda ose Perdoruesi nuk u gjet!");
     }
-    await Conversation.findByIdAndDelete(id);
-    await Messages.deleteMany({ conversation: id });
+    const updatedConversation = await Conversation.findByIdAndUpdate(
+      id,
+      { $addToSet: { deletedBy: user } },
+      { new: true }
+    );
+    // await Conversation.findByIdAndDelete(id);
+    // await Messages.deleteMany({ conversation: id });
     // await Conversation.findByIdAndUpdate(id,{
     //     $pull:{
     //         members:user

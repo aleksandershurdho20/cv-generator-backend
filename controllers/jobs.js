@@ -1,3 +1,4 @@
+const Applicants = require("../models/Applicants");
 const Jobs = require("../models/Job");
 const SavedJobs = require("../models/SavedJobs");
 const User = require("../models/User");
@@ -33,19 +34,19 @@ const getJobs = async (req, res) => {
 
 const getFilteredJobs = async (req, res) => {
   const { title, jobType,category } = req.query;
-  const test = title === "undefined";
-  const second = jobType === "undefined";
-  const third = category === "undefined";
+  const titleQuery = title === "undefined";
+  const jobTypeQuery = jobType === "undefined";
+  const categoryQuery = category === "undefined";
 
   const filters = {
-    ...(!test && {
+    ...(!titleQuery && {
       title: {
         $regex: title,
         $options: "i",
       },
     }),
-    ...(!second && { jobType: jobType }),
-    ...(!third && { category: category }),
+    ...(!jobTypeQuery && { jobType: jobType }),
+    ...(!categoryQuery && { category: category }),
 
   };
   try {
@@ -93,6 +94,7 @@ const deleteJob = async (req, res) => {
   const { id } = req.params;
   try {
     const jobs = await Jobs.findByIdAndDelete(id);
+    await Applicants.findOne({job:id}).remove().exec()
     return res.status(200).send("Puna u fshi me sukses!");
   } catch (error) {
     res.status(500).send(error);
