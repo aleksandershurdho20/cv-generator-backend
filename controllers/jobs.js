@@ -95,6 +95,7 @@ const deleteJob = async (req, res) => {
   try {
     const jobs = await Jobs.findByIdAndDelete(id);
     await Applicants.findOne({job:id}).remove().exec()
+    await SavedJobs.find({job:id}).remove().exec()
     return res.status(200).send("Puna u fshi me sukses!");
   } catch (error) {
     res.status(500).send(error);

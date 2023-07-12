@@ -43,6 +43,7 @@ const getCompanyStats = async (req, res) => {
       { $match: { "jobData.company": new mongoose.Types.ObjectId(id) } },
       { $group: { _id: "$status", count: { $sum: 1 } } },
     ]);
+    console.log(applicantStatuses,'applicantStatuses')
     const createdJobs = await Job.find({ company: id });
 
     res.json({

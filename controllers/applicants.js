@@ -115,19 +115,38 @@ const getAllCompanyJobApplications = async(req,res) =>{
 const getApplicant = async(req,res) =>{
     const {id}=req.params
     try {
-       const applicant = await UserProfile.findOne({_id:id}) 
+     const applicant = await UserProfile.findOne({_id:id}) 
+    // const applicant = await Applicants.find({candidate:id})
+    // .populate({
+    //     path:"candidate",
+    //     select:"userProfileId",
+    //     populate: [
+    //         { path: 'userProfileId' },
+    //     ]
+    // }).select("candidate status")
        res.json(applicant)
     } catch (error) {
         res.status(500).send(error)
         console.log(error)
     }
 }
+const getApplicantStatus = async(req,res) =>{
+    try {
+        const {id}= req.params;
+        const status = await Applicants.findOne({candidate:id})
+        res.json(status)
+    } catch (error) {
+        res.status(500).send(error)
+ 
+    }
+}
 
 const rejectApplicant = async(req,res) =>{
-    const {id}=req.params
+    const {id,job}=req.params
+    console.log(req.params)
     try {
         const applicant =  await Applicants.findOneAndUpdate(
-            { candidate: id },
+            { candidate: id,job:job },
             { $set: { status: 'rejected' } },
             { new: true }
           );
@@ -140,10 +159,10 @@ const rejectApplicant = async(req,res) =>{
 }
 
 const contactApplicant = async(req,res) =>{
-    const {id}=req.params
+    const {id,job}=req.params
     try {
         const applicant =  await Applicants.findOneAndUpdate(
-            { candidate: id },
+            { candidate: id,job:job },
             { $set: { status: 'shortlisted' } },
             { new: true }
           );
@@ -161,5 +180,6 @@ module.exports ={
     getAllCompanyJobApplications,
     getApplicant,
     rejectApplicant,
-    contactApplicant
+    contactApplicant,
+    getApplicantStatus
 }

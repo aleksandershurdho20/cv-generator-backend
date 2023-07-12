@@ -3,7 +3,8 @@ const Messages = require("../models/Messages");
 const { ObjectId } = require('mongodb');
 
 const createConversation = async (req, res) => {
-  const {params,...rest}= req.body
+  const {params,members}= req.body
+  console.log(members)
   try {
     const converSationExist =  await Conversation.findOne({
       members: { $in: [params.receiver] },
@@ -14,10 +15,13 @@ const createConversation = async (req, res) => {
      res.status(201).json(messages)
     }
     else{
-
-      const conversation = await new Conversation(rest).save();
+      const conversation =  new Conversation({members})
+      await conversation.save()
       const data = {...params,conversation:ObjectId(conversation._id).valueOf()}
-       await new Messages(data).save()
+       const messages=  new Messages(data)
+
+       await messages.save()
+      console.log(data,conversation,messages)
       res.status(201).json(conversation);
     }
   } catch (error) {
@@ -62,22 +66,22 @@ const deleteUserConversation = async (req, res) => {
   const { user } = req.body;
   console.log(id, user, "oo");
   try {
-    const conversation = await Conversation.findOne({ _id: id, members: user });
-    if (!conversation) {
-      return res.status(400).send("Biseda ose Perdoruesi nuk u gjet!");
-    }
-    const updatedConversation = await Conversation.findByIdAndUpdate(
-      id,
-      { $addToSet: { deletedBy: user } },
-      { new: true }
-    );
-    // await Conversation.findByIdAndDelete(id);
-    // await Messages.deleteMany({ conversation: id });
-    // await Conversation.findByIdAndUpdate(id,{
-    //     $pull:{
-    //         members:user
-    //     }
-    // })
+    // const conversation = await Conversation.findOne({ _id: id, members: user });
+    // if (!conversation) {
+    //   return res.status(400).send("Biseda ose Perdoruesi nuk u gjet!");
+    // }
+    // const updatedConversation = await Conversation.findByIdAndUpdate(
+    //   id,
+    //   { $addToSet: { deletedBy: user } },
+    //   { new: true }
+    // );
+    await Conversation.findByIdAndDelete(id);
+    await Messages.deleteMany({ conversation: id });
+    await Conversation.findByIdAndUpdate(id,{
+        $pull:{
+            members:user
+        }
+    })
     res.status(200).send("U fshi me sukses!");
   } catch (error) {
     console.log(error);
